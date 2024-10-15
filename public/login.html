@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="../public/style.css" />
+    <title>Sign In</title>
+  </head>
+  <body>
+    <header class="main-head">
+      <nav>
+        <h1 id="logo">DB</h1>
+        <ul>
+          <li><a class="anchor" href="#">Sign Up</a></li>
+          <li><a class="anchor" href="./login.html">Log In</a></li>
+          <li>
+            <a class="btanchor" href="./signup.html">Log Out</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <div class="container" id="signin">
+      <h1 class="form-title">Sign In</h1>
+      <form id="loginForm">
+        <div class="input-group">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Enter your email"
+            required
+          />
+          <label for="email">Email</label>
+        </div>
+        <div class="input-group">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter your password"
+            required
+          />
+          <label for="password">Password</label>
+        </div>
+        <input type="submit" class="btn" value="Sign In" />
+      </form>
+
+      <p class="or">------------or------------</p>
+      <div class="icons">
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-google"></i>
+      </div>
+      <div class="links">
+        <p>Don't have an Account yet?</p>
+        <button id="signUpButton"><a href="./signup.html">Sign Up</a></button>
+      </div>
+    </div>
+
+    <script>
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          // Send POST request to backend for login
+          try {
+            const response = await fetch("http://localhost:3000/signin", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+              // Store the token in localStorage
+              localStorage.setItem("token", result.token);
+
+              // Redirect the user to the interest rate page
+              window.location.href = "./interestRate.html";
+            } else {
+              alert(result.message); // Show the error message if login failed
+            }
+          } catch (error) {
+            console.error("Error during login:", error);
+            alert("Something went wrong, please try again later.");
+          }
+        });
+    </script>
+  </body>
+</html>

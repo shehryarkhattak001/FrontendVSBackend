@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Interest Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f0f0f0;
+      }
+
+      header.main-head {
+        background-color: #333;
+        padding: 5px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      #logo {
+        color: #fff;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+      }
+
+      nav ul li {
+        margin-left: 20px;
+      }
+
+      nav ul li a {
+        text-decoration: none;
+        color: #fff;
+        font-size: 16px;
+        padding: 10px;
+      }
+
+      nav ul li a:hover {
+        color: #0464fd;
+      }
+
+      .btanchor {
+        background-color: #0363d1;
+        border: 6px solid #0363d1;
+        border-radius: 35px;
+        text-decoration: none;
+        color: white;
+      }
+
+      .calculator-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        max-width: 500px;
+        width: 100%;
+        align-items: center;
+        justify-content: center;
+        margin: 30px auto;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+
+      .form-group button {
+        padding: 10px 15px;
+        background-color: #0464fd;
+        color: #fff;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .form-group button:hover {
+        background-color: #218838;
+      }
+
+      .results {
+        margin-top: 20px;
+        font-size: 18px;
+      }
+
+      .results p {
+        margin: 10px 0;
+      }
+
+      table {
+        width: 100%;
+        margin-top: 20px;
+        border-collapse: collapse;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        text-align: center;
+      }
+
+      .delete-btn {
+        padding: 5px 10px;
+        color: white;
+        background-color: red;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .delete-btn:hover {
+        background-color: darkred;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="main-head">
+      <h1 id="logo">DB</h1>
+      <nav>
+        <ul>
+          <li><a class="anchor" href="#">Sign Up</a></li>
+          <li><a class="anchor" href="./login.html">Log In</a></li>
+          <li>
+            <a class="btanchor" href="./signup.html">Log Out</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <div class="calculator-container">
+      <h1>Simple Interest Calculator</h1>
+      <div class="form-group">
+        <label for="principal">Principal (P):</label>
+        <input type="number" id="principal" placeholder="Enter Principal" />
+      </div>
+      <div class="form-group">
+        <label for="rate">Rate of Interest (R):</label>
+        <input type="number" id="rate" placeholder="Enter Interest Rate" />
+      </div>
+      <div class="form-group">
+        <label for="time">Time (T in years):</label>
+        <input type="number" id="time" placeholder="Enter Time Period" />
+      </div>
+      <div class="form-group">
+        <button id="calculateBtn">Calculate Interest</button>
+      </div>
+
+      <div class="results" id="results"></div>
+
+      <h2>Previous Interest Calculations</h2>
+      <table id="interestTable">
+        <thead>
+          <tr>
+            <th>Sr. No.</th>
+            <th>Principal</th>
+            <th>Rate</th>
+            <th>Time</th>
+            <th>Btn</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      const calculateBtn = document.getElementById("calculateBtn");
+      const principalInput = document.getElementById("principal");
+      const rateInput = document.getElementById("rate");
+      const timeInput = document.getElementById("time");
+      const resultsDiv = document.getElementById("results");
+      const interestTable = document
+        .getElementById("interestTable")
+        .getElementsByTagName("tbody")[0];
+
+      calculateBtn.addEventListener("click", async () => {
+        const principal = principalInput.value;
+        const rate = rateInput.value;
+        const time = timeInput.value;
+
+        if (!principal || !rate || !time) {
+          alert("Please fill out all fields.");
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:3000/interest", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ principal, rate, time }),
+          });
+
+          const data = await response.json();
+          resultsDiv.innerHTML = `
+          <p>Calculated Interest: ${data.interest}</p>
+          <p>Total Amount (Principal + Interest): ${data.total}</p>
+        `;
+
+          fetchInterestData(); // Refresh the table after calculation
+        } catch (error) {
+          console.error("Error calculating interest:", error);
+        }
+      });
+
+      async function fetchInterestData() {
+        const response = await fetch("http://localhost:3000/interest-rate");
+        const data = await response.json();
+        const interestData = data.interestData;
+
+        interestTable.innerHTML = ""; // Clear the existing rows
+
+        interestData.forEach((item, index) => {
+          const row = interestTable.insertRow();
+          row.insertCell(0).textContent = index + 1;
+          row.insertCell(1).textContent = item.principal;
+          row.insertCell(2).textContent = item.rate;
+          row.insertCell(3).textContent = item.time;
+
+          // Add delete button
+          const deleteCell = row.insertCell(4);
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Delete";
+          deleteBtn.classList.add("delete-btn");
+          deleteBtn.addEventListener("click", () =>
+            deleteInterest(item._id, row)
+          );
+          deleteCell.appendChild(deleteBtn);
+        });
+      }
+
+      // Function to delete the interest entry from the database and table
+      async function deleteInterest(id, row) {
+        try {
+          const response = await fetch(`http://localhost:3000/interest/${id}`, {
+            method: "DELETE",
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            alert("Interest record deleted!");
+            row.remove(); // Remove the row from the table
+          } else {
+            alert("Failed to delete the record.");
+          }
+        } catch (error) {
+          console.error("Error deleting interest record:", error);
+        }
+      }
+
+      // Fetch interest rates on page load
+      fetchInterestData();
+    </script>
+  </body>
+</html>

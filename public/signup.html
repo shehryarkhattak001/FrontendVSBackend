@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="../public/style.css" />
+    <title>Sign Up</title>
+  </head>
+  <body>
+    <header class="main-head">
+      <nav>
+        <h1 id="logo">DB</h1>
+        <ul>
+          <li><a class="anchor" href="#">Sign Up</a></li>
+          <li><a class="anchor" href="./login.html ">Log In</a></li>
+          <li>
+            <a class="btanchor" href="./signup.html">Log Out</a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <div class="container" id="signup">
+      <h1 class="form-title">Sign Up</h1>
+      <form id="signupForm">
+        <div class="input-group">
+          <input
+            type="text"
+            name="firstName"
+            id="firstName"
+            placeholder="Enter the First Name"
+            required
+          />
+          <label for="firstName">First Name</label>
+        </div>
+        <div class="input-group">
+          <input
+            type="text"
+            name="lastName"
+            id="lastName"
+            placeholder="Enter the Last Name"
+            required
+          />
+          <label for="lastName">Last Name</label>
+        </div>
+        <div class="input-group">
+          <input
+            type="email"
+            name="email"
+            id="email"
+            placeholder="Enter the email"
+            required
+          />
+          <label for="email">Email</label>
+        </div>
+        <div class="input-group">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Enter the password"
+            required
+          />
+          <label for="password">Password</label>
+        </div>
+        <input type="submit" class="btn" value="Sign Up" />
+      </form>
+      <p class="or">------------or------------</p>
+      <div class="icons">
+        <i class="fa-brands fa-facebook"></i>
+        <i class="fa-brands fa-google"></i>
+      </div>
+      <div class="links">
+        <p>Already Have Account?</p>
+        <button id="signInButton"><a href="./Login.html">Sign In</a></button>
+      </div>
+    </div>
+
+    <script>
+      const signupForm = document.getElementById("signupForm");
+
+      signupForm.addEventListener("submit", async (e) => {
+        e.preventDefault(); // usko rokega
+        const formData = new FormData(signupForm);
+        const data = Object.fromEntries(formData.entries());
+
+        try {
+          const response = await fetch("http://localhost:3000/signup", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json", // Set content type to JSON
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+            alert("Signup successful!");
+            window.location.href = "./Login.html";
+          } else {
+            const errorMessage = await response.json();
+            alert("Signup failed: " + errorMessage.message);
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred during signup.");
+        }
+      });
+    </script>
+  </body>
+</html>
